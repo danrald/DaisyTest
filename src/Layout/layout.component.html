@@ -1,0 +1,51 @@
+<!-- Top Nav -->
+<header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white shadow flex items-center px-4">
+  <button
+    class="text-2xl p-2 rounded bg-gray-800 hover:bg-gray-400"
+    (click)="toggleSidebar()"
+    [attr.aria-expanded]="sidebarOpen()"
+  >
+    ☰
+  </button>
+  <span class="ml-4 font-semibold">App</span>
+</header>
+
+<!-- Sidebar -->
+<aside
+  class="
+    fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64
+    bg-gray-700 text-white
+    transition-transform duration-300
+  "
+  [style.transform]="sidebarTransform()"
+>
+  <nav class="p-4 space-y-2">
+    <a class="block p-2 rounded hover:bg-gray-600" href="#">Home</a>
+    <a class="block p-2 rounded hover:bg-gray-600" href="#">Link 1</a>
+    <a class="block p-2 rounded hover:bg-gray-600" href="#">Link 2</a>
+  </nav>
+</aside>
+
+<!-- Backdrop -->
+<div
+  class="
+    fixed inset-0 z-30 bg-black/50
+    transition-opacity duration-300
+  "
+  [class.opacity-0]="!showBackdrop()"
+  [class.pointer-events-none]="!showBackdrop()"
+  (click)="closeSidebar()"
+></div>
+
+<!-- Main -->
+<main
+  class="
+    pt-16 min-h-screen
+    transition-transform duration-300
+  "
+  [style.transform]="mainTransform()"
+>
+  <div class="p-6">
+    Main content goes here
+  </div>
+</main>
