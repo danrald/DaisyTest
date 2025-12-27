@@ -15,28 +15,44 @@ export class LayoutComponent {
   private readonly DESKTOP_WIDTH = 1024;
 
   isDesktop = signal(window.innerWidth >= this.DESKTOP_WIDTH);
-  sidebarOpen = signal(this.isDesktop());
 
-  sidebarTransform = computed(() =>
-    this.sidebarOpen() ? 'translateX(0)' : 'translateX(-100%)'
+  primaryOpen = signal(this.isDesktop());
+  secondaryOpen = signal(false);
+
+  primaryTransform = computed(() =>
+    this.primaryOpen() ? 'translateX(0)' : 'translateX(-100%)'
   );
 
-  mainTransform = computed(() =>
-    this.sidebarOpen() && this.isDesktop()
-      ? 'translateX(16rem)'
-      : 'translateX(0)'
+  secondaryTransform = computed(() =>
+    this.secondaryOpen() ? 'translateX(0)' : 'translateX(100%)'
   );
+
+  mainTransform = computed(() => {
+    let offset = 0;
+
+    if (this.primaryOpen() && this.isDesktop()) offset += 16;
+    if (this.secondaryOpen() && this.isDesktop()) offset -= 16;
+
+    return `translateX(${offset}rem)`;
+  });
 
   showBackdrop = computed(() =>
-    this.sidebarOpen() && !this.isDesktop()
+    (!this.isDesktop()) && (this.primaryOpen() || this.secondaryOpen())
   );
 
-  toggleSidebar() {
-    this.sidebarOpen.update(v => !v);
+  togglePrimary() {
+    this.primaryOpen.update(v => !v);
+    if (!this.isDesktop()) this.secondaryOpen.set(false);
   }
 
-  closeSidebar() {
-    this.sidebarOpen.set(false);
+  toggleSecondary() {
+    this.secondaryOpen.update(v => !v);
+    if (!this.isDesktop()) this.primaryOpen.set(false);
+  }
+
+  closeAll() {
+    this.primaryOpen.set(false);
+    this.secondaryOpen.set(false);
   }
 
   @HostListener('window:resize')
@@ -45,7 +61,8 @@ export class LayoutComponent {
 
     if (desktop !== this.isDesktop()) {
       this.isDesktop.set(desktop);
-      this.sidebarOpen.set(desktop); // reset default per breakpoint
+      this.primaryOpen.set(desktop);
+      this.secondaryOpen.set(false);
     }
   }
 }
